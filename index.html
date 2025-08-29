@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Tacogrid Copilot</title>
+  <meta name="theme-color" content="#0ea5e9"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <!-- Leaflet + jsPDF via CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous"/>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Tacogrid Copilot <span id="pwaBadge" class="badge" style="display:none">PWA</span></h1>
+      <p class="muted">Planeador de rota com pausas (regras UE) + exportações. Versão “Pages-ready”.</p>
+    </header>
+
+    <section class="card">
+      <h2>Mapa, rota & áreas</h2>
+      <div id="map"></div>
+      <p class="muted" id="hint">Clique no mapa: defina <b>Início</b>, <b>Fim</b> e use <b>Shift+Clique</b> para waypoints.</p>
+      <div class="row">
+        <span class="pill">Último clique: <span id="lastClick">—</span></span>
+        <button id="setStart" class="secondary">Definir como Início</button>
+        <button id="setEnd" class="secondary">Definir como Fim</button>
+        <button id="clearRoute" class="secondary">Limpar rota</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Planeador</h2>
+      <div class="row">
+        <label class="input"><span>Vel. média (km/h)</span><input id="avgSpeed" type="number" min="40" max="100" step="5" value="75"></label>
+        <label class="input"><span>Partida</span><input id="startTime" type="datetime-local"></label>
+        <label class="input chk"><input id="use10h" type="checkbox" checked> <span>Usar extensões 10h (até 2×/semana)</span></label>
+        <label class="input chk"><input id="snapRest" type="checkbox" checked> <span>Preferir áreas ≤5 km</span></label>
+        <button id="btnPlan" class="ghost">Calcular plano</button>
+        <button id="btnPlanPDF" class="secondary">Plano (PDF)</button>
+        <button id="btnPlanCSV" class="secondary">Plano (CSV)</button>
+      </div>
+      <div id="plan"></div>
+    </section>
+
+    <section class="card">
+      <h2>Áreas de descanso (base local)</h2>
+      <p class="muted">Usadas para encaixar pausas 4h30 perto do traçado. (Amostra UE)</p>
+      <table id="restTable">
+        <thead><tr><th>Nome</th><th>Lat</th><th>Lon</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <footer class="muted">
+      Regras (resumo): 4h30 → pausa 45min (15+30), 9h/10h/dia, 56h/semana, 90h/quinzena, descanso ≥11h.
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Registra o Service Worker (necessário para PWA/Pages)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(()=>{
+        document.getElementById('pwaBadge').style.display='inline-block';
+      });
+    }
+  </script>
+</body>
+</html>
